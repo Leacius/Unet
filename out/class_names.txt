@@ -1,0 +1,5 @@
+_background_
+goal
+red_line
+box
+black_line
