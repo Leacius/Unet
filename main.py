@@ -1,8 +1,9 @@
 import torch
 from torch import nn
+from pathlib import Path
+from torch.optim import Adam
 from unet_light import UNet_light as UNet
 from dataset import MyDataset as datasets
-from torch.optim import Adam
 
 
 if __name__ == '__main__':
@@ -23,6 +24,9 @@ if __name__ == '__main__':
     optimizer = Adam(model.parameters(), lr=1e-4)
 
     model.train()
+    save_path = Path("./chkp")
+    save_path.mkdir(exist_ok=True)
+
     for epoch in range(100):
         for i, (data, label) in enumerate(dataloader):
             data = data.cuda()
