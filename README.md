@@ -17,5 +17,7 @@ python inference.py
 
 `
 img: .jpg
+`
+`
 label: .npy
 `
