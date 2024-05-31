@@ -7,25 +7,46 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-def transform(image, mask):
+def transform(image, mask, size=(64, 64)):
+
+    size = size
 
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
     transform = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize(mean, std), 
-                # transforms.RandomHorizontalFlip(),
-                transforms.Resize((256, 256)),
+                transforms.RandomAutocontrast(0.5),
+                transforms.RandomGrayscale(0.5),
+                transforms.Resize(size),
                 ])
     
     transform_mask = transforms.Compose([
-                transforms.Resize((256, 256)),
-                # transforms.RandomHorizontalFlip(),
+                transforms.Resize(size),
                 ])
     
-    image = transform(image)
+    transform_F = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize(mean, std), 
+                transforms.RandomHorizontalFlip(1),
+                transforms.RandomAutocontrast(0.5),
+                transforms.RandomGrayscale(0.5),
+                transforms.Resize(size),
+                ])
+    
+    transform_mask_F = transforms.Compose([
+                transforms.Resize(size),
+                transforms.RandomHorizontalFlip(1),
+                ])
+    
     mask = torch.from_numpy(mask).float()
-    mask = transform_mask(mask)
+
+    if np.random.rand() > 0.5:
+        image = transform_F(image)
+        mask = transform_mask_F(mask)
+    else:
+        image = transform(image)
+        mask = transform_mask(mask)
 
     image = np.array(image)
     mask = np.array(mask)
@@ -33,7 +54,7 @@ def transform(image, mask):
     return image, mask
 
 class MyDataset(torch.utils.data.Dataset):
-    def __init__(self, root, classes=5):
+    def __init__(self, root, classes=5, size=(64, 64)):
         self.root = Path(root)
         self.data = list((self.root / "JPEGImages").glob('*.jpg'))
         self.label = list((self.root / "SegmentationClass").glob('*.npy'))
@@ -49,7 +70,7 @@ class MyDataset(torch.utils.data.Dataset):
         path = str(path)
         label = np.load(path)
         maps = np.zeros((self.classes, label.shape[0], label.shape[1]))
-        for i in range(1, 5):
+        for i in range(5):
             if (label == i).any():
                 maps[i][label == i] = 1
 

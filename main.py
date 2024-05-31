@@ -9,9 +9,9 @@ from dataset import MyDataset as datasets
 if __name__ == '__main__':
     root = "./output"
 
-    dataset = datasets(root)
+    dataset = datasets(root, size=(64, 64))
     dataloader = torch.utils.data.DataLoader(dataset, 
-                                             batch_size=2, 
+                                             batch_size=8, 
                                              num_workers=4,
                                              pin_memory=True,
                                              drop_last=True,

@@ -29,27 +29,27 @@ class UNet_light(nn.Module):
         self.mid_up = nn.Upsample(scale_factor=2, mode='nearest')
 
         self.up4 = nn.Sequential(
-            conv_block(576+576, 576),
+            conv_block(576+576, 256),
             nn.Upsample(scale_factor=2, mode='nearest'),
         )
         self.up3 = nn.Sequential(
-            conv_block(576+48, 48),
+            conv_block(256+48, 128),
             nn.Upsample(scale_factor=2, mode='nearest'),
         )
         self.up2 = nn.Sequential(
-            conv_block(48+24, 24),
+            conv_block(128+24, 64),
             nn.Upsample(scale_factor=2, mode='nearest'),
         )
         self.up1 = nn.Sequential(
-            conv_block(24+16, 16),
+            conv_block(64+16, 32),
             nn.Upsample(scale_factor=2, mode='nearest'),
         )
         self.up0 = nn.Sequential(
-            conv_block(16, 8),
+            conv_block(32, 16),
             nn.Upsample(scale_factor=2, mode='nearest'),
         )
 
-        self.out = nn.Conv2d(8, num_classes, kernel_size=1)
+        self.out = nn.Conv2d(16, num_classes, kernel_size=1)
 
     def forward(self, x):
         # print(max(x))

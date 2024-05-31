@@ -9,7 +9,7 @@ from unet_light import UNet_light as UNet
 
 
 def draw_mask(img, mask):
-    colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]
+    colors = [(0, 0, 0), (255, 0, 0), (0, 200, 55), (50, 127, 127), (100, 100, 255)]
     maps = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
     for i in range(5):
         idx = mask == i
@@ -26,8 +26,11 @@ def draw_mask(img, mask):
     plt.show()
 
 if __name__ == '__main__':
+
+    size = (64, 64)
+
     model = UNet(5)
-    model_state = torch.load("./chkp/model_22.pth")
+    model_state = torch.load("./chkp/model_17.pth")
     model.load_state_dict(model_state)
     model.eval()
     model.cuda()
@@ -35,7 +38,7 @@ if __name__ == '__main__':
     transform = transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
-                transforms.Resize((256, 256)),
+                transforms.Resize(size),
                 ])
     
     img = Image.open("0036.jpg").convert('RGB')
