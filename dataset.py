@@ -13,40 +13,34 @@ def transform(image, mask, size=(64, 64)):
 
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
-    transform = transforms.Compose([
-                transforms.ToTensor(),
-                transforms.Normalize(mean, std), 
-                transforms.RandomAutocontrast(0.5),
-                transforms.RandomGrayscale(0.5),
-                transforms.Resize(size),
-                ])
+    aug = [
+        transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5),
+        transforms.GaussianBlur(3, (0.1, 2.0)),
+    ]
+    trans = [
+        transforms.ToTensor(),
+        transforms.Normalize(mean, std), 
+        transforms.Resize(size),
+        transforms.RandomAutocontrast(0.5),
+        transforms.RandomGrayscale(0.5),
+    ]
+    for i in aug:
+        if np.random.rand() > 0.5:
+            trans.append(i)
+    transform = transforms.Compose(trans)
     
     transform_mask = transforms.Compose([
                 transforms.Resize(size),
                 ])
     
-    transform_F = transforms.Compose([
-                transforms.ToTensor(),
-                transforms.Normalize(mean, std), 
-                transforms.RandomHorizontalFlip(1),
-                transforms.RandomAutocontrast(0.5),
-                transforms.RandomGrayscale(0.5),
-                transforms.Resize(size),
-                ])
-    
-    transform_mask_F = transforms.Compose([
-                transforms.Resize(size),
-                transforms.RandomHorizontalFlip(1),
-                ])
-    
     mask = torch.from_numpy(mask).float()
 
+    image = transform(image)
+    mask = transform_mask(mask)
+
     if np.random.rand() > 0.5:
-        image = transform_F(image)
-        mask = transform_mask_F(mask)
-    else:
-        image = transform(image)
-        mask = transform_mask(mask)
+        image = transforms.RandomHorizontalFlip(1)(image)
+        mask = transforms.RandomHorizontalFlip(1)(mask)
 
     image = np.array(image)
     mask = np.array(mask)

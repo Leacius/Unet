@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     dataset = datasets(root, size=(64, 64))
     dataloader = torch.utils.data.DataLoader(dataset, 
-                                             batch_size=8, 
+                                             batch_size=16, 
                                              num_workers=4,
                                              pin_memory=True,
                                              drop_last=True,
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     save_path = Path("./chkp")
     save_path.mkdir(exist_ok=True)
 
-    for epoch in range(100):
+    for epoch in range(50):
         for i, (data, label) in enumerate(dataloader):
             data = data.cuda()
             label = label.cuda()

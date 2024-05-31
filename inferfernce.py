@@ -8,7 +8,7 @@ from torchvision import transforms
 from unet_light import UNet_light as UNet
 
 
-def draw_mask(img, mask):
+def draw_mask(img, mask, name="mask.jpg"):
     colors = [(0, 0, 0), (255, 0, 0), (0, 200, 55), (50, 127, 127), (100, 100, 255)]
     maps = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
     for i in range(5):
@@ -22,7 +22,7 @@ def draw_mask(img, mask):
     ax.imshow(img)
     ax2 = fig.add_subplot(1, 2, 2)
     ax2.imshow(maps)
-    plt.savefig("mask.jpg")
+    plt.savefig(name)
     plt.show()
 
 if __name__ == '__main__':
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     size = (64, 64)
 
     model = UNet(5)
-    model_state = torch.load("./chkp/model_17.pth")
+    model_state = torch.load("./chkp/model_31.pth")
     model.load_state_dict(model_state)
     model.eval()
     model.cuda()
@@ -51,6 +51,6 @@ if __name__ == '__main__':
         out = out.argmax(axis=1)
         out = out.squeeze(0).cpu().numpy()
 
-        draw_mask(ori_img, out)
+        draw_mask(ori_img, out, "epoch_21_test.jpg")
 
         
